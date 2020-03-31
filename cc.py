@@ -1,5 +1,6 @@
 import random
 import re
+from urllib.parse import parse_qs
 
 import requests
 
@@ -62,10 +63,11 @@ class CC:
         data = self.extract_form(resp.text)
         if data is not None:
             data['TextBoxNameNo'] = username
-            resp = self._session.post(self.SIGNIN_URL, data)
-            if 'SignCct' in resp.url:
+            resp = self._session.post(self.SIGNIN_MOBILE_PORTAL_URL, data)
+            content = resp.text
+            if 'SignCct' in content:
                 return self._signin_mobile(resp)
-            elif '老师尚未开通签到' in resp.text:
+            elif '老师尚未开通签到' in content:
                 return CC.STAT_CLOSE
             else:
                 return CC.STAT_FAIL
@@ -74,13 +76,31 @@ class CC:
 
     def _signin_mobile(self, resp_portal):
         content = resp_portal.text
-        data = self.extract_form(content)
-        if data is not None:
-            reg_positions = re.compile('<span id="DataList1_LabelDesk_27">-\D*?(\d\.\d\.\d)\D*?-</span>')
-            positions = reg_positions.findall(content)
+
+        reg_params = re.compile("window.location.href='SignCct\.aspx\?(.*?)'")
+        params = reg_params.findall(content)
+        if len(params) >= 1:
+            params = parse_qs(params[0])
+            params = dict([(k, v[0]) for k, v in params.items()])
+
+        resp = self._session.get(self.SIGNIN_MOBILE_URL, params=params)
+        content = resp.text
+        data = {}
+
+        positions = []
+        reg_positions_2 = re.compile(
+            r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: " style="color:Blue;"></span>')
+        indexes = reg_positions_2.findall(content)
+        for index in indexes:
+            reg_position = re.compile(r'<span id="DataList1_LabelDesk_%s">-\D*(\d\.\d\.\d)\D*?-</span>' % index)
+            position = reg_position.findall(content)
+            if len(position) > 0:
+                positions.append(position[0])
+
+        if len(positions) != 0:
             position = positions[random.randint(0, len(positions) - 1)]
             data['TextBoxDesk'] = position
-            resp = self._session.post(resp_portal.url, data)
+            resp = self._session.post(self.SIGNIN_MOBILE_URL, data, params=params)
             if '签到成功' in resp.text:
                 return CC.STAT_SUCCESS
             else:

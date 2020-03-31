@@ -18,7 +18,7 @@ try:
 
     if os.path.exists(FILE_ACCOUNT):
         with open(FILE_ACCOUNT, 'r', encoding='utf8') as io:
-            config = config.update(**json.load(io))
+            config.update(**json.load(io))
     else:
         config.update(
             username=input('Username:'),

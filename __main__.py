@@ -8,7 +8,6 @@ from cc import CC
 FILE_ACCOUNT = './account.json'
 
 try:
-    c = CC()
     config = {
         'username': '',
         'password': '',
@@ -27,13 +26,18 @@ try:
         with open(FILE_ACCOUNT, 'w', encoding='utf8') as io:
             json.dump(config, io, ensure_ascii=False, indent=4)
 
-    if c.login(**config):
+    auth = config.get('auth')
+    if auth is not None:
+        auth = tuple(auth)
+
+    cc = CC(config.get('host'), auth=auth)
+    if cc.login(config['username'], config['password']):
         print('Login success.')
         while True:
             if config['mobile']:
-                r = c.signin_mobile(config['username'])
+                r = cc.signin_mobile(config['username'])
             else:
-                r = c.signin()
+                r = cc.signin()
             if r == CC.STAT_SUCCESS:
                 print('Signin success.')
                 break

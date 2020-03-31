@@ -17,8 +17,11 @@ class CC:
     SIGNIN_MOBILE_PORTAL_URL = 'http://%s/m/SignM.aspx'
     SIGNIN_MOBILE_URL = 'http://%s/m/SignCct.aspx'
 
-    def __init__(self, host='cc.szpt.edu.cn'):
+    def __init__(self, host=None, auth=None):
+        if host is None:
+            host = 'cc.szpt.edu.cn'
         self._session = requests.session()
+        self._session.auth = auth
         self.LOGIN_URL = self.LOGIN_URL % host
         self.SIGNIN_URL = self.SIGNIN_URL % host
         self.SIGNIN_MOBILE_PORTAL_URL = self.SIGNIN_MOBILE_PORTAL_URL % host

@@ -27,9 +27,13 @@ try:
         with open(FILE_ACCOUNT, 'w', encoding='utf8') as io:
             json.dump(config, io, ensure_ascii=False, indent=4)
 
-    if config['mobile']:
+    if c.login(**config):
+        print('Login success.')
         while True:
-            r = c.signin_mobile(config['username'])
+            if config['mobile']:
+                r = c.signin_mobile(config['username'])
+            else:
+                r = c.signin()
             if r == CC.STAT_SUCCESS:
                 print('Signin success.')
                 break
@@ -40,21 +44,7 @@ try:
 
             time.sleep(config['interval'])
     else:
-        if c.login(**config):
-            print('Login success.')
-            while True:
-                r = c.signin()
-                if r == CC.STAT_SUCCESS:
-                    print('Signin success.')
-                    break
-                elif r == CC.STAT_CLOSE:
-                    print('Signin closed, retry.')
-                else:
-                    print('Signin failed, retry.')
-
-                time.sleep(config['interval'])
-        else:
-            print('Login failed.')
+        print('Login failed.')
 except:
     traceback.print_exc()
 finally:

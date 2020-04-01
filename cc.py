@@ -88,12 +88,12 @@ class CC:
 
         resp = self._session.get(self.SIGNIN_MOBILE_URL, params=params)
         content = resp.text
-        data = {}
-
+        data = self.extract_form(content)
         positions = []
-        reg_positions_2 = re.compile(
-            r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: " style="color:Blue;"></span>')
-        indexes = reg_positions_2.findall(content)
+
+        reg_index = re.compile(
+            r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">')
+        indexes = reg_index.findall(content)
         for index in indexes:
             reg_position = re.compile(r'<span id="DataList1_LabelDesk_%s">-\D*(\d\.\d\.\d)\D*?-</span>' % index)
             position = reg_position.findall(content)
@@ -107,6 +107,6 @@ class CC:
             if '签到成功' in resp.text:
                 return CC.STAT_SUCCESS
             else:
-                return CC.STAT_CLOSE
+                return CC.STAT_FAIL
         else:
             return CC.STAT_FAIL

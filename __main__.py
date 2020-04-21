@@ -13,6 +13,7 @@ try:
         'password': '',
         'interval': 1,
         'mobile': True,
+        'protocol': 'http',
     }
 
     if os.path.exists(FILE_ACCOUNT):
@@ -30,7 +31,7 @@ try:
     if auth is not None:
         auth = tuple(auth)
 
-    cc = CC(config.get('host'), auth=auth)
+    cc = CC(config.get('host'), auth=auth, protocol=config.get('protocol'))
     if cc.login(config['username'], config['password']):
         print('Login success.')
         while True:

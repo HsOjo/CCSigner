@@ -12,20 +12,21 @@ class CC:
     STAT_SUCCESS = 1
     STAT_CLOSE = 2
 
-    LOGIN_URL = 'http://%s/Login.aspx'
-    SIGNIN_URL = 'http://%s/sSign.aspx'
-    SIGNIN_MOBILE_PORTAL_URL = 'http://%s/m/SignM.aspx'
-    SIGNIN_MOBILE_URL = 'http://%s/m/SignCct.aspx'
+    LOGIN_URL = '%s://%s/Login.aspx'
+    SIGNIN_URL = '%s://%s/sSign.aspx'
+    SIGNIN_MOBILE_PORTAL_URL = '%s://%s/m/SignM.aspx'
+    SIGNIN_MOBILE_URL = '%s://%s/m/SignCct.aspx'
 
-    def __init__(self, host=None, auth=None):
+    def __init__(self, host=None, auth=None, protocol='http'):
         if host is None:
             host = 'cc.szpt.edu.cn'
         self._session = requests.session()
         self._session.auth = auth
-        self.LOGIN_URL = self.LOGIN_URL % host
-        self.SIGNIN_URL = self.SIGNIN_URL % host
-        self.SIGNIN_MOBILE_PORTAL_URL = self.SIGNIN_MOBILE_PORTAL_URL % host
-        self.SIGNIN_MOBILE_URL = self.SIGNIN_MOBILE_URL % host
+
+        self.LOGIN_URL = self.LOGIN_URL % (protocol, host)
+        self.SIGNIN_URL = self.SIGNIN_URL % (protocol, host)
+        self.SIGNIN_MOBILE_PORTAL_URL = self.SIGNIN_MOBILE_PORTAL_URL % (protocol, host)
+        self.SIGNIN_MOBILE_URL = self.SIGNIN_MOBILE_URL % (protocol, host)
 
     def extract_form(self, content, index=0):
         fs = common.extract_forms(content)

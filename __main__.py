@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import time
 import traceback
 
@@ -16,9 +17,13 @@ try:
         'protocol': 'http',
     }
 
+    if len(sys.argv) > 1:
+        FILE_ACCOUNT = sys.argv[1]
+
     if os.path.exists(FILE_ACCOUNT):
         with open(FILE_ACCOUNT, 'r', encoding='utf8') as io:
             config.update(**json.load(io))
+        print('Init.', config)
     else:
         config.update(
             username=input('Username:'),
@@ -34,6 +39,7 @@ try:
     cc = CC(config.get('host'), auth=auth, protocol=config.get('protocol'))
     if cc.login(config['username'], config['password']):
         print('Login success.')
+        i = 0
         while True:
             if config['mobile']:
                 r = cc.signin_mobile(config['username'])
@@ -43,14 +49,18 @@ try:
                 print('Signin success.')
                 break
             elif r == CC.STAT_CLOSE:
-                print('Signin closed, retry.')
+                print(('[%s] Signin closed, retry' % i) + ('.' * (i % 4)) + (' ' * 3), end='\r')
             else:
-                print('Signin failed, retry.')
+                print('[%s] Signin failed, retry.' % i)
 
             time.sleep(config['interval'])
+
+            i += 1
     else:
         print('Login failed.')
+except KeyboardInterrupt:
+    print()
 except:
     traceback.print_exc()
 finally:
-    input('Pause.')
+    input('Stopped.')

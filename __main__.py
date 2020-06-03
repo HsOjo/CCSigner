@@ -15,6 +15,7 @@ try:
         'interval': 1,
         'mobile': True,
         'protocol': 'http',
+        'start_now': False,
     }
 
     if len(sys.argv) > 1:
@@ -35,6 +36,10 @@ try:
     auth = config.get('auth')
     if auth is not None:
         auth = tuple(auth)
+
+    if not config['start_now']:
+        sleep_time = int(input('Input sleep time(seconds):'))
+        time.sleep(sleep_time)
 
     cc = CC(config.get('host'), auth=auth, protocol=config.get('protocol'))
     if cc.login(config['username'], config['password']):

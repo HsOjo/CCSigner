@@ -69,8 +69,9 @@ class CC:
             resp = self._session.post(self.SIGNIN_URL, data)
             data = self.extract_form(resp.text)
             positions = re.findall(r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">', resp.text)
-            data['TextBoxDesk'] = positions[random.randint(0, len(positions) - 1)]
-            resp = self._session.post(self.SIGNIN_URL, data)
+            if len(positions) != 0:
+                data['TextBoxDesk'] = positions[random.randint(0, len(positions) - 1)]
+                resp = self._session.post(self.SIGNIN_URL, data)
             if '签到成功' in resp.text:
                 return CC.STAT_SUCCESS
             elif '签到未开通' in resp.text:

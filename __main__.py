@@ -13,7 +13,7 @@ try:
         'username': '',
         'password': '',
         'interval': 1,
-        'mobile': True,
+        'type': 1,  # 1.normal 2.mobile 3.vpn
         'protocol': 'http',
         'start_now': False,
     }
@@ -38,16 +38,21 @@ try:
         auth = tuple(auth)
 
     if not config['start_now']:
-        sleep_time = int(input('Input sleep time(seconds):'))
-        time.sleep(sleep_time)
+        try:
+            sleep_time = int(input('Input sleep time(seconds):'))
+            time.sleep(sleep_time)
+        except:
+            pass
 
     cc = CC(config.get('host'), auth=auth, protocol=config.get('protocol'))
     if cc.login(config['username'], config['password']):
         print('Login success.')
         i = 0
         while True:
-            if config['mobile']:
+            if config['type'] == 2:
                 r = cc.signin_mobile(config['username'])
+            elif config['type'] == 3:
+                r = cc.signin_vpn()
             else:
                 r = cc.signin()
             if r == CC.STAT_SUCCESS:

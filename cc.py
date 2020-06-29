@@ -67,9 +67,9 @@ class CC:
         data = self.extract_form(resp.text)
         if data is not None:
             resp = self._session.post(self.SIGNIN_URL, data)
-            data = self.extract_form(resp.text)
             positions = re.findall(r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">', resp.text)
             if len(positions) != 0:
+                data = self.extract_form(resp.text)
                 data['TextBoxDesk'] = positions[random.randint(0, len(positions) - 1)]
                 resp = self._session.post(self.SIGNIN_URL, data)
             if '签到成功' in resp.text:

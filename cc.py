@@ -67,7 +67,13 @@ class CC:
         data = self.extract_form(resp.text)
         if data is not None:
             resp = self._session.post(self.SIGNIN_URL, data)
-            positions = re.findall(r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">', resp.text)
+            positions = []
+            indexes = re.findall(r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">', resp.text)
+            for index in indexes:
+                position = re.findall(r'<span id="DataList1_LabelDesk_\d+">----&ensp;(\d+)&ensp;----</span>', resp.text)
+                if len(position) != 0:
+                    positions.append(index)
+
             if len(positions) != 0:
                 data = self.extract_form(resp.text)
                 data['TextBoxDesk'] = positions[random.randint(0, len(positions) - 1)]

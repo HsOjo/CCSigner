@@ -70,9 +70,9 @@ class CC:
             positions = []
             indexes = re.findall(r'<span id="DataList1_LabelStudentName_(\d+)" title="学号: ">', resp.text)
             for index in indexes:
-                position = re.findall(r'<span id="DataList1_LabelDesk_\d+">----&ensp;(\d+)&ensp;----</span>', resp.text)
+                position = re.findall(r'<span id="DataList1_LabelDesk_%s">----&ensp;(\d+)&ensp;----</span>' % (index), resp.text)
                 if len(position) != 0:
-                    positions.append(index)
+                    positions.append(position[0])
 
             if len(positions) != 0:
                 data = self.extract_form(resp.text)
